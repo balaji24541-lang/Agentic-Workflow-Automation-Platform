@@ -1,8 +1,7 @@
 from datetime import datetime
 from decimal import Decimal
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, Numeric, String, Text, UniqueConstraint, func
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, JSON, Numeric, String, Text, UniqueConstraint, func
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
@@ -49,7 +48,7 @@ class Invoice(Base):
     buyer_tax_id: Mapped[str | None] = mapped_column(String(100))
     source_dataset: Mapped[str] = mapped_column(String(100), nullable=False, default="zenodo")
     source_file: Mapped[str] = mapped_column(String(255), nullable=False)
-    raw_payload: Mapped[dict | None] = mapped_column(JSONB)
+    raw_payload: Mapped[dict | None] = mapped_column(JSON)
     received_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
     status: Mapped[str] = mapped_column(String(30), default="INGESTED", nullable=False)
     raw_text: Mapped[str | None] = mapped_column(Text)
@@ -73,6 +72,6 @@ class AuditLog(Base):
     log_id: Mapped[int] = mapped_column(Integer, primary_key=True)
     invoice_id: Mapped[int] = mapped_column(Integer, nullable=False)
     node_name: Mapped[str] = mapped_column(String(100), nullable=False)
-    input_snapshot: Mapped[dict | None] = mapped_column(JSONB)
-    output_snapshot: Mapped[dict | None] = mapped_column(JSONB)
+    input_snapshot: Mapped[dict | None] = mapped_column(JSON)
+    output_snapshot: Mapped[dict | None] = mapped_column(JSON)
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
