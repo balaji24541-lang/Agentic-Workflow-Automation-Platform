@@ -29,9 +29,6 @@ pdfplumber
 # Dashboard
 streamlit
 
-# Synthetic data
-faker
-
 # Testing
 pytest
 httpx
