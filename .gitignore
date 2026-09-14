@@ -32,6 +32,8 @@ Thumbs.db
 *.sqlite3
 *.db
 postgres_data/
+data/raw/
+data/processed/
 
 # Build artifacts
 build/
