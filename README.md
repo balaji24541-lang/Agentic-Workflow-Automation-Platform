@@ -59,7 +59,7 @@ SQL Context   Python Rules    LLM Decision
 
 ## Status
 
-🚧 **In development** — the project foundation and public-data ingestion layer are being built incrementally with tests and documentation.
+🚧 **In development** — the project now includes public invoice annotation ingestion, a persisted invoice schema, an idempotent manifest-to-PostgreSQL loader, and a read-only invoice API. Agent orchestration and validation stages are next.
 
 ## Local Setup
 
@@ -70,7 +70,7 @@ SQL Context   Python Rules    LLM Decision
 docker compose up -d postgres
 ```
 
-3. Download the public invoice annotation archive using the ingestion command:
+3. Download and normalize the public invoice annotations:
 
 ```bash
 python -m ingestion.zenodo_invoice_dataset
@@ -82,13 +82,29 @@ python -m ingestion.zenodo_invoice_dataset
 python -m ingestion.zenodo_invoice_dataset --download-images
 ```
 
-5. Run the API:
+5. Create the current database schema:
+
+```bash
+python -m database.init_db
+```
+
+6. Load the normalized invoice manifest into PostgreSQL:
+
+```bash
+python -m ingestion.load_invoices
+```
+
+The loader is idempotent for the `(source_dataset, source_file)` key, so rerunning it skips records that have already been persisted.
+
+7. Run the API:
 
 ```bash
 uvicorn api.main:app --reload
 ```
 
-6. Run tests:
+The persisted invoice records are available at `GET /invoices`, with optional `status` and `limit` query parameters.
+
+8. Run tests:
 
 ```bash
 pytest
