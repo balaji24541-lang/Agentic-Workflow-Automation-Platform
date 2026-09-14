@@ -1,0 +1,40 @@
+# API
+fastapi
+uvicorn[standard]
+
+# Database
+sqlalchemy
+psycopg2-binary
+alembic
+
+# Agentic AI
+langgraph
+langchain
+langchain-google-genai
+
+# Data / ML
+pandas
+numpy
+scikit-learn
+
+# Validation / configuration
+pydantic
+pydantic-settings
+python-dotenv
+
+# Document ingestion
+pymupdf
+pdfplumber
+
+# Dashboard
+streamlit
+
+# Synthetic data
+faker
+
+# Testing
+pytest
+httpx
+
+# Development quality
+ruff
