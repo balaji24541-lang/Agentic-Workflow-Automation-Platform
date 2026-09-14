@@ -1,7 +1,7 @@
 from datetime import datetime
 from decimal import Decimal
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, Numeric, String, Text, func
+from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, Numeric, String, Text, UniqueConstraint, func
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
@@ -32,14 +32,26 @@ class PurchaseOrder(Base):
 
 class Invoice(Base):
     __tablename__ = "invoices"
+    __table_args__ = (
+        UniqueConstraint("source_dataset", "source_file", name="uq_invoice_source_file"),
+    )
 
     invoice_id: Mapped[int] = mapped_column(Integer, primary_key=True)
     vendor_id: Mapped[int | None] = mapped_column(ForeignKey("vendors.vendor_id"))
     invoice_number: Mapped[str] = mapped_column(String(100), nullable=False)
     po_number: Mapped[str | None] = mapped_column(String(100))
     amount: Mapped[Decimal | None] = mapped_column(Numeric(14, 2))
+    tax_amount: Mapped[Decimal | None] = mapped_column(Numeric(14, 2))
+    invoice_date: Mapped[str | None] = mapped_column(String(30))
+    seller_name: Mapped[str | None] = mapped_column(String(255))
+    seller_address: Mapped[str | None] = mapped_column(Text)
+    seller_tax_id: Mapped[str | None] = mapped_column(String(100))
+    buyer_tax_id: Mapped[str | None] = mapped_column(String(100))
+    source_dataset: Mapped[str] = mapped_column(String(100), nullable=False, default="zenodo")
+    source_file: Mapped[str] = mapped_column(String(255), nullable=False)
+    raw_payload: Mapped[dict | None] = mapped_column(JSONB)
     received_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
-    status: Mapped[str] = mapped_column(String(30), default="PENDING", nullable=False)
+    status: Mapped[str] = mapped_column(String(30), default="INGESTED", nullable=False)
     raw_text: Mapped[str | None] = mapped_column(Text)
 
 
