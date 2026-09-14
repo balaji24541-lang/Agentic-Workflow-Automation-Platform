@@ -1,0 +1,13 @@
+[project]
+name = "agentic-workflow-automation-platform"
+version = "0.1.0"
+description = "Enterprise-oriented agentic invoice workflow automation platform"
+requires-python = ">=3.11"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]

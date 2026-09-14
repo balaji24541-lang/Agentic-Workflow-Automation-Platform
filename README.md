@@ -6,10 +6,20 @@ An enterprise-oriented agentic workflow automation platform for intelligent invo
 
 The platform automates invoice triage by combining document extraction, SQL context retrieval, deterministic validation, LLM-based reasoning, human approval, and auditable actions.
 
+## Data Policy
+
+This project does **not** generate synthetic enterprise transactions. It uses documented public datasets and keeps downloaded raw data outside Git.
+
+The primary document source is the Zenodo **Dataset of invoices and receipts including annotation of relevant fields** (DOI `10.5281/zenodo.6371710`). It contains 813 invoice/receipt images and annotations for fields including seller, buyer tax IDs, invoice date, total amount, tax amount, and document reference.
+
+For procurement context, the project can ingest public Open Contracting Data Standard (OCDS) datasets. The repository documents the selected sources in `data/SOURCES.md` and does not fabricate invoice-to-PO relationships when the public sources do not provide a defensible join key.
+
 ## Planned Architecture
 
 ```text
-Invoice / Request
+Public Invoice Document
+       |
+Document Ingestion / OCR
        |
      FastAPI
        |
@@ -47,7 +57,35 @@ SQL Context   Python Rules    LLM Decision
 
 ## Status
 
-🚧 **In development** — project foundation is being built incrementally with tests and documentation.
+🚧 **In development** — the project foundation and public-data ingestion layer are being built incrementally with tests and documentation.
+
+## Local Setup
+
+1. Copy `.env.example` to `.env`.
+2. Start PostgreSQL:
+
+```bash
+docker compose up -d postgres
+```
+
+3. Download the public invoice dataset described in `data/SOURCES.md` and extract it under `data/raw/invoices/`.
+4. Validate that the annotation loader can read the downloaded records:
+
+```bash
+python -m ingestion.zenodo_invoice_loader
+```
+
+5. Run the API:
+
+```bash
+uvicorn api.main:app --reload
+```
+
+6. Run tests:
+
+```bash
+pytest
+```
 
 ## Repository Structure
 
@@ -56,10 +94,11 @@ api/         # REST API and application services
 agent/       # LangGraph workflow and agent nodes
 analysis/    # Deterministic validation and anomaly detection
 database/    # SQLAlchemy models and database access
-ingestion/   # Invoice/PDF ingestion and extraction
-dashboard/   # Operational dashboard
-sql/         # Database schema and seed SQL
+ingestion/   # Public document ingestion and extraction
+dashboard/  # Operational dashboard
+sql/         # Database SQL assets
 tests/       # Unit, API, and integration tests
+data/       # Data-source documentation and local data workspace
 ```
 
 ## Security
