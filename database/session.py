@@ -1,9 +1,12 @@
 from collections.abc import Generator
 
+from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
 from os import getenv
+
+load_dotenv()
 
 DATABASE_URL = getenv(
     "DATABASE_URL",
