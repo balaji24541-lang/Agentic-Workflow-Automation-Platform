@@ -4,7 +4,7 @@ An enterprise-oriented agentic workflow automation platform for intelligent invo
 
 ## Project Vision
 
-The platform automates invoice triage by combining document extraction, SQL context retrieval, deterministic validation, LLM-based reasoning, human approval, and auditable actions.
+The platform automates invoice triage by combining public document ingestion, structured extraction, SQL context retrieval, deterministic validation, LLM-based reasoning, human approval, and auditable actions.
 
 ## Data Policy
 
@@ -12,14 +12,16 @@ This project does **not** generate synthetic enterprise transactions. It uses do
 
 The primary document source is the Zenodo **Dataset of invoices and receipts including annotation of relevant fields** (DOI `10.5281/zenodo.6371710`). It contains 813 invoice/receipt images and annotations for fields including seller, buyer tax IDs, invoice date, total amount, tax amount, and document reference.
 
-For procurement context, the project can ingest public Open Contracting Data Standard (OCDS) datasets. The repository documents the selected sources in `data/SOURCES.md` and does not fabricate invoice-to-PO relationships when the public sources do not provide a defensible join key.
+For procurement context, the project can ingest public Open Contracting Data Standard (OCDS) datasets. See `data/SOURCES.md` for attribution, licensing, and source details. We do not fabricate invoice-to-PO relationships when the public sources do not provide a defensible join key.
 
-## Planned Architecture
+## Architecture
 
 ```text
 Public Invoice Document
        |
 Document Ingestion / OCR
+       |
+Structured Invoice
        |
      FastAPI
        |
@@ -40,7 +42,7 @@ SQL Context   Python Rules    LLM Decision
            Audit Trail
 ```
 
-## Planned Stack
+## Stack
 
 - Python
 - FastAPI
@@ -68,11 +70,16 @@ SQL Context   Python Rules    LLM Decision
 docker compose up -d postgres
 ```
 
-3. Download the public invoice dataset described in `data/SOURCES.md` and extract it under `data/raw/invoices/`.
-4. Validate that the annotation loader can read the downloaded records:
+3. Download the public invoice annotation archive using the ingestion command:
 
 ```bash
-python -m ingestion.zenodo_invoice_loader
+python -m ingestion.zenodo_invoice_dataset
+```
+
+4. Optionally download the large image archive:
+
+```bash
+python -m ingestion.zenodo_invoice_dataset --download-images
 ```
 
 5. Run the API:
